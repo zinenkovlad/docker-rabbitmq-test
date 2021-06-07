@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: "rabbitmq-host"
+    ports:
+      - 5672:5672
+      - 15672:15672
+  consumer:
+    build: consumer
+    environment:
+      QUEUE_NAME: 'image_url'
+      AMQP_URL: 'amqp://rabbitmq-host?connection_attempts=10&retry_delay=10'
+    volumes:
+      - type: bind
+        source: /d/PycharmProjects/docker-rabbitmq-test/data
+        target: /usr/src/app/data
+  publisher:
+    build: publisher
+    environment:
+      QUEUE_NAME: 'image_url'
+      AMQP_URL: 'amqp://rabbitmq-host?connection_attempts=5&retry_delay=5'
